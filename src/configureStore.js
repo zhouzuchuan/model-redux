@@ -1,28 +1,25 @@
-import { createStore, applyMiddleware, compose } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux'
+import zip from 'lodash.zip'
+import { STORE } from './config'
 
-import distributeMiddleware from './middleware/distributeMiddleware.js';
-import observableMiddlevare from './middleware/observableMiddlevare.js';
-import promiseMiddleware from './middleware/promiseMiddleware.js';
+import distributeMiddleware from './distributeMiddleware.js'
 
-export default function(app, middlewares = []) {
-  console.log(app);
-  const devtools =
-    typeof window === 'object' && process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION__
-      ? window.__REDUX_DEVTOOLS_EXTENSION__
-      : () => f => f;
+export default function(app, middlewaresList = []) {
+    const devtools =
+        typeof window === 'object' && process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION__
+            ? window.__REDUX_DEVTOOLS_EXTENSION__
+            : () => f => f
 
-  // 中间件列表
-  const middleware2 = [
-    ...Object.values(app.effectsList).map(v => v.middleware),
-    distributeMiddleware.bind(null, app),
-    observableMiddlevare.bind(null, app),
-    promiseMiddleware.bind(null, app),
-    ...middlewares
-  ];
+    const [middlewares = [], promises = []] = zip(
+        ...Object.values(app.effectsList).map(v => [v.middleware, v.promise.bind(null, app)])
+    )
 
-  const store = createStore(f => f, {}, compose(...[applyMiddleware(...middleware2), devtools()]));
+    // 中间件列表
+    const middleware2 = [...middlewares, distributeMiddleware.bind(null, app), ...promises, ...middlewaresList]
 
-  app._store = store;
+    const store = createStore(f => f, {}, compose(...[applyMiddleware(...middleware2), devtools()]))
 
-  return store;
+    app[STORE] = store
+
+    return store
 }

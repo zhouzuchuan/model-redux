@@ -2,7 +2,7 @@
     "name": "model-redux",
     "version": "0.0.1",
     "description": "",
-    "main": "index.js",
+    "main": "lib",
     "scripts": {
         "build": "babel src -d lib",
         "build2": "cross-env BABEL_ENV=es babel src --out-dir ../../taro/wx-test/model-redux",
@@ -27,7 +27,9 @@
         "eslint": "^5.10.0"
     },
     "dependencies": {
+        "lodash.omit": "^4.5.0",
         "lodash.pick": "^4.4.0",
+        "lodash.zip": "^4.2.0",
         "redux": "^4.0.1",
         "redux-observable": "^1.0.0",
         "redux-saga": "^0.16.2"
