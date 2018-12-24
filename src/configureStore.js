@@ -1,6 +1,7 @@
 import { createStore, applyMiddleware, compose } from 'redux'
 import zip from 'lodash.zip'
 import { STORE } from './config'
+import { returnArray } from './utils'
 
 import distributeMiddleware from './distributeMiddleware.js'
 
@@ -14,14 +15,20 @@ export default function(app, middlewaresList = []) {
         ...Object.values(app.effectsList).map(v => [v.middleware, v.promise.bind(null, app)])
     )
 
+    const [beforeMW = [], afterMW = []] = middlewaresList
+
     // 中间件列表
-    const middleware2 = [...middlewares, distributeMiddleware.bind(null, app), ...promises, ...middlewaresList]
+    const middleware2 = [
+        ...middlewares,
+        ...returnArray(beforeMW),
+        distributeMiddleware.bind(null, app),
+        ...promises,
+        ...returnArray(afterMW)
+    ]
 
     const store = createStore(f => f, {}, compose(...[applyMiddleware(...middleware2), devtools()]))
 
     app[STORE] = store
-
-    console.log(app)
 
     return store
 }

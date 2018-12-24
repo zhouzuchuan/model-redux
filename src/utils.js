@@ -40,6 +40,9 @@ export const returnEffectName = (type, app) => {
     return temp
 }
 
+// 返回数据数据
+export const returnArray = obj => (isArray(obj) ? obj : [obj])
+
 // 数据类型
 export const getType = obj =>
     Object.prototype.toString
