@@ -1,5 +1,5 @@
 import { Subject, queueScheduler, BehaviorSubject } from 'rxjs'
-import { observeOn, mergeMap } from 'rxjs/operators'
+import { observeOn, mergeMap, take } from 'rxjs/operators'
 import { createEpicMiddleware, combineEpics, ActionsObservable, StateObservable } from 'redux-observable'
 
 import { isFunction, epicEnhance, createStatisticsName } from '../utils'
@@ -42,22 +42,25 @@ export const promise = (name, app, store) => {
             return
         }
 
-        if (isFunction(__RESOLVE__) && isFunction(__REJECT__)) {
-            const fns = app[name][rest.type]
+        const fns = app[name][rest.type]
+        return epicEnhance(fns)(action$, state$)
 
-            if (isFunction(fns)) {
-                try {
-                    __RESOLVE__(epicEnhance(fns)(action$, state$))
-                } catch (e) {
-                    __REJECT__(e)
-                }
-            } else {
-                console.warn(`${rest.type} must be function!`)
-                __REJECT__(new Error())
-            }
-        } else {
-            next(rest)
-        }
+        // if (isFunction(__RESOLVE__) && isFunction(__REJECT__)) {
+        //   const fns = app[name][rest.type];
+
+        //   if (isFunction(fns)) {
+        //     try {
+        //       __RESOLVE__(epicEnhance(fns)(action$, state$));
+        //     } catch (e) {
+        //       __REJECT__(e);
+        //     }
+        //   } else {
+        //     console.warn(`${rest.type} must be function!`);
+        //     __REJECT__(new Error());
+        //   }
+        // } else {
+        //   next(rest);
+        // }
     }
 }
 

@@ -10,6 +10,8 @@ export default function registerModel(app = null, models) {
         return
     }
 
+    let temp = false
+
     const col = (Array.isArray(models) ? models : [models])
         .filter(model => {
             if (!isObject(model)) {
@@ -17,7 +19,7 @@ export default function registerModel(app = null, models) {
                 return false
             }
             const { namespace } = model
-            if (isUndefined(namespace)) {
+            if (isUndefined(namespace) || app[MODELS].includes(namespace)) {
                 console.warn('namespace 必填并且唯一，请检查！')
                 return false
             }
@@ -25,48 +27,50 @@ export default function registerModel(app = null, models) {
             app[MODELS].push(namespace)
             return true
         })
-        .reduce(
-            (r, model) => {
-                const dealKey = Object.keys(omit(model, keyword))
+        .reduce((r, model) => {
+            const dealKey = Object.keys(omit(model, keyword))
 
-                const { namespace, state = {} } = model
+            const { namespace, state = {} } = model
 
-                // 对需要添加命名空间的key统一处理
-                return ['reducers', ...dealKey].reduce(
-                    (r1, effectsname, i) => {
-                        const injectAsyncData = addNameSpace(effectsname, model)
+            temp = true
 
-                        const tag = createStatisticsName(effectsname)
+            // 对需要添加命名空间的key统一处理
+            return ['reducers', ...dealKey].reduce(
+                (r1, effectsname, i) => {
+                    const injectAsyncData = addNameSpace(effectsname, model)
 
-                        // 第一个（reducers）不加入统计
-                        if (i) {
-                            app[tag] = {
-                                ...(app[tag] || {}),
-                                ...injectAsyncData
-                            }
-                        } else {
-                            if (!app[tag]) app[tag] = {}
+                    const tag = createStatisticsName(effectsname)
+
+                    // 第一个（reducers）不加入统计
+                    if (i) {
+                        app[tag] = {
+                            ...(app[tag] || {}),
+                            ...injectAsyncData
                         }
+                    } else {
+                        if (!app[tag]) app[tag] = {}
+                    }
 
-                        return {
-                            ...r1,
-                            [effectsname]: {
-                                ...(r[effectsname] || {}),
-                                [namespace]: injectAsyncData
-                            }
-                        }
-                    },
-                    {
-                        ...r,
-                        state: {
-                            ...r.state,
-                            [namespace]: state
+                    return {
+                        ...r1,
+                        [effectsname]: {
+                            ...(r[effectsname] || {}),
+                            [namespace]: injectAsyncData
                         }
                     }
-                )
-            },
-            { state: {} }
-        )
+                },
+                {
+                    ...r,
+                    state: {
+                        ...(r.state || {}),
+                        [namespace]: state
+                    }
+                }
+            )
+        }, {})
+
+    // 没有载入新的模型 取消
+    if (!temp) return
 
     // 注入reducer
     for (let [n, m] of Object.entries(col.reducers)) {

@@ -21,5 +21,7 @@ export default function(app, middlewaresList = []) {
 
     app[STORE] = store
 
+    console.log(app)
+
     return store
 }
