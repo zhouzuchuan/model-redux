@@ -15,7 +15,7 @@ export default function registerModel(app = null, models) {
     const col = (Array.isArray(models) ? models : [models])
         .filter(model => {
             if (!isObject(model)) {
-                console.warn('model 必须导出object，请检查！')
+                // console.warn('model 必须导出object，请检查！')
                 return false
             }
             const { namespace } = model
