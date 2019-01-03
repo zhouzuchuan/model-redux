@@ -1,7 +1,8 @@
-import { returnEffectName } from './utils'
+import { returnEffectName } from './utils';
+import { Action } from '../node_modules/redux';
 
-export default app => next => action => {
-    const name = returnEffectName(action.type, app)
+export default (app: any) => (next: any) => (action: Action) => {
+    const name = returnEffectName(action.type, app);
 
     // 如果有 则分发
     if (name) {
@@ -12,8 +13,8 @@ export default app => next => action => {
                 __REJECT__: reject,
                 ...action
             })
-        )
+        );
     } else {
-        next(action)
+        next(action);
     }
-}
+};

@@ -1,16 +1,12 @@
 {
     "name": "model-redux",
-    "version": "0.0.4",
+    "version": "0.1.0",
     "description": "",
     "main": "lib",
     "scripts": {
-        "build": "babel src -d lib",
-        "build2": "cross-env BABEL_ENV=es babel src --out-dir ../../taro/wx-test/model-redux",
-        "build:umd:dev": "cross-env BABEL_ENV=es NODE_ENV=development rollup -c -i src/index.js -o dist/redux-saga.js",
-        "build:umd:prod": "cross-env BABEL_ENV=es NODE_ENV=production rollup -c -i src/index.js -o dist/redux-saga.min.js",
-        "build:cjs": "cross-env BABEL_ENV=cjs babel src --out-dir lib",
-        "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "build": "tsc",
+        "dev": "tsc -w",
+        "prepare": "npm run build"
     },
     "keywords": [
         "redux"
@@ -18,13 +14,13 @@
     "author": "fezzc",
     "license": "MIT",
     "devDependencies": {
-        "babel-cli": "^6.26.0",
-        "babel-eslint": "^10.0.1",
-        "babel-preset-env": "^1.7.0",
-        "babel-preset-es2015": "^6.24.1",
-        "babel-preset-stage-3": "^6.24.1",
+        "@types/invariant": "^2.2.29",
+        "@types/lodash.omit": "^4.5.4",
+        "@types/lodash.zip": "^4.2.4",
+        "@types/node": "^10.12.18",
         "cross-env": "^5.2.0",
-        "eslint": "^5.10.0"
+        "tslint": "^5.12.0",
+        "tslint-config-prettier": "^1.17.0"
     },
     "dependencies": {
         "invariant": "^2.2.4",

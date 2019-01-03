@@ -57,14 +57,11 @@ typings/
 # dotenv environment variables file
 .env
 
-rollup.config.js
-.prettierignore
 .editorconfig
 .gitignore
-.babelrc
+.tslint.json
 .gitignore
-.eslintrc.js
-.travis.yml
+.tsconfig.json
 yarn.lock
 *.lock
 src/*
