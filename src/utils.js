@@ -4,7 +4,7 @@ import { ofType } from 'redux-observable'
 export const epicEnhance = fn => (action$, ...other) => fn(action$.pipe(ofType(fn.name)), ...other, action$)
 
 // 创建统计名称
-export const createStatisticsName = str => `@_${str}`
+export const createStatisticsName = str => `@@_${str}`
 
 // 添加命名空间
 export const addNameSpace = (name, model) => {
@@ -24,14 +24,15 @@ export const createReducer = (initialState, handlers) => (state = initialState, 
     }
 }
 
-// 取 effects 名称
+// 取 effects 名称（没有引入effects则取不到 以及注入了effects 但没有 promise 也取不到）
 export const returnEffectName = (type, app) => {
     let temp = ''
     if (isString(type)) {
-        const effectsName = Object.keys(app.effectsList)
-        for (let v of effectsName) {
+        const effectsName = Object.entries(app.effectsList)
+        for (let [v, { promise }] of effectsName) {
             const cache = app[createStatisticsName(v)] || {}
-            if (cache[type]) {
+            // 当前action存在 并且存在的effects中有自定义promise则返回
+            if (cache[type] && promise) {
                 temp = v
                 continue
             }

@@ -11,8 +11,12 @@ export default function(app, middlewaresList = []) {
             ? window.__REDUX_DEVTOOLS_EXTENSION__
             : () => f => f
 
+    // 分发effects middleware
     const [middlewares = [], promises = []] = zip(
-        ...Object.values(app.effectsList).map(v => [v.middleware, v.promise.bind(null, app)])
+        ...Object.values(app.effectsList).map(({ middleware, promise }) => [
+            middleware,
+            ...(promise ? [promise.bind(null, app)] : [])
+        ])
     )
 
     const [beforeMW = [], afterMW = []] = middlewaresList

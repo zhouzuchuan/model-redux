@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import omit from 'lodash.omit'
 
-import { addNameSpace, createStatisticsName, createReducer, isObject, isUndefined } from './utils'
+import { addNameSpace, createStatisticsName, createReducer, isObject, isUndefined, console } from './utils'
 import { keyword, STORE, MODELS, REDUCERS } from './config'
 
 export default function registerModel(app = null, models) {

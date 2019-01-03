@@ -1,6 +1,6 @@
 {
     "name": "model-redux",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "",
     "main": "lib",
     "scripts": {
@@ -27,6 +27,7 @@
         "eslint": "^5.10.0"
     },
     "dependencies": {
+        "invariant": "^2.2.4",
         "lodash.omit": "^4.5.0",
         "lodash.pick": "^4.4.0",
         "lodash.zip": "^4.2.0",

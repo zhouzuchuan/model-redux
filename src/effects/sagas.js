@@ -1,7 +1,7 @@
 import createSagaMiddleware from 'redux-saga'
 import { fork, takeLatest, all, put, select, call } from 'redux-saga/effects'
 
-import { isGeneratorFunction, isFunction, createStatisticsName } from '../utils'
+import { isGeneratorFunction, isFunction, createStatisticsName, console } from '../utils'
 
 export const middleware = createSagaMiddleware()
 
@@ -61,17 +61,7 @@ export const promise = (name, app, store) => next => action => {
         const fns = app[name][rest.type]
 
         if (isGeneratorFunction(fns)) {
-            function* actionG() {
-                try {
-                    const ret = yield fns(rest, { put, call, select })
-
-                    __RESOLVE__(ret)
-                } catch (e) {
-                    __REJECT__(e)
-                }
-            }
-
-            const gen = actionG()
+            const gen = actionG(fns, rest, __RESOLVE__, __REJECT__)
             const next2 = () => {
                 if (!gen.next().done) next2()
             }
@@ -82,6 +72,15 @@ export const promise = (name, app, store) => next => action => {
         }
     } else {
         next(rest)
+    }
+}
+
+function* actionG(fns, rest, resolve, reject) {
+    try {
+        const ret = yield fns(rest, { put, call, select })
+        resolve(ret)
+    } catch (e) {
+        reject(e)
     }
 }
 
