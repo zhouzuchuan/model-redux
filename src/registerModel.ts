@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux';
-import omit from 'lodash-es/omit';
 
 import { addNameSpace, createStatisticsName, createReducer, isObject, isUndefined } from './utils';
 import { keyword, STORE, MODELS, REDUCERS } from './config';
@@ -29,7 +28,7 @@ export default function registerModel(app: any = null, models: any) {
             return true;
         })
         .reduce((r, model) => {
-            const dealKey = Object.keys(omit(model, keyword));
+            const dealKey: string[] = Object.keys(model).filter((v: string) => !keyword.includes(v));
 
             const { namespace, state = {} } = model;
 

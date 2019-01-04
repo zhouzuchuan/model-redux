@@ -1,5 +1,4 @@
 import { createStore, applyMiddleware, compose } from 'redux';
-import zip from 'lodash-es/zip';
 import { STORE } from './config';
 import { returnArray } from './utils';
 
@@ -14,10 +13,12 @@ export default function(app: any, middlewaresList = []) {
             : () => (f: any) => f;
 
     // 分发effects middleware
-    const [middlewares = [], promises = []] = zip(
-        ...Object.values(app.effectsList).map(
-            ({ middleware, promise }: any): any[] => [middleware, ...(promise ? [promise.bind(null, app)] : [])]
-        )
+    const [middlewares = [], promises = []]: any = Object.values(app.effectsList).reduce(
+        (r: any[], { middleware, promise }: any): any[] => [
+            [...r[0], middleware],
+            [...r[1], ...(promise ? [promise.bind(null, app)] : [])]
+        ],
+        [[], []]
     );
 
     const [beforeMW = [], afterMW = []] = middlewaresList;
