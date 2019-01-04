@@ -1,7 +1,6 @@
 import { returnEffectName } from './utils';
-import { Action } from '../node_modules/redux';
 
-export default (app: any) => (next: any) => (action: Action) => {
+export default (app: any) => (next: any) => (action: any) => {
     const name = returnEffectName(action.type, app);
 
     // 如果有 则分发

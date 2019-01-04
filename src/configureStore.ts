@@ -1,5 +1,5 @@
 import { createStore, applyMiddleware, compose } from 'redux';
-import zip from 'lodash.zip';
+import zip from 'lodash-es/zip';
 import { STORE } from './config';
 import { returnArray } from './utils';
 
@@ -31,7 +31,7 @@ export default function(app: any, middlewaresList = []) {
         ...returnArray(afterMW)
     ];
 
-    const store = createStore(f => f, {}, compose(...[applyMiddleware(...middleware2), devtools()]));
+    const store = createStore((f: any) => f, {}, compose(...[applyMiddleware(...middleware2), devtools()]));
 
     app[STORE] = store;
 
