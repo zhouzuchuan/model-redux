@@ -1,6 +1,6 @@
 {
     "name": "model-redux",
-    "version": "0.1.2",
+    "version": "1.0.0",
     "description": "",
     "main": "lib",
     "scripts": {
@@ -9,7 +9,11 @@
         "prepare": "npm run build"
     },
     "keywords": [
-        "redux"
+        "redux",
+        "model",
+        "rxjs",
+        "redux-saga",
+        "redux-observable"
     ],
     "author": "fezzc",
     "license": "MIT",
