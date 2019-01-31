@@ -19,7 +19,7 @@ export default function registerModel(app: any = null, models: any) {
                 return false;
             }
             const { namespace } = model;
-            if (isUndefined(namespace) || app[MODELS].includes(namespace)) {
+            if (isUndefined(namespace)) {
                 invariant(false, 'namespace 必填并且唯一，请检查！');
                 return false;
             }
@@ -45,7 +45,7 @@ export default function registerModel(app: any = null, models: any) {
                     if (i) {
                         app[tag] = {
                             ...(app[tag] || {}),
-                            ...injectAsyncData
+                            ...injectAsyncData,
                         };
                     } else {
                         if (!app[tag]) app[tag] = {};
@@ -55,17 +55,17 @@ export default function registerModel(app: any = null, models: any) {
                         ...r1,
                         [effectsname]: {
                             ...(r[effectsname] || {}),
-                            [namespace]: injectAsyncData
-                        }
+                            [namespace]: injectAsyncData,
+                        },
                     };
                 },
                 {
                     ...r,
                     state: {
                         ...(r.state || {}),
-                        [namespace]: state
-                    }
-                }
+                        [namespace]: state,
+                    },
+                },
             );
         }, {});
 
