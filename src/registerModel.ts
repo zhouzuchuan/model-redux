@@ -24,6 +24,11 @@ export default function registerModel(app: any = null, models: any) {
                 return false;
             }
 
+            // 过滤重复载入
+            if (app[MODELS].includes(namespace)) {
+                return false;
+            }
+
             app[MODELS].push(namespace);
             return true;
         })
