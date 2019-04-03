@@ -5,8 +5,7 @@
     "main": "lib",
     "scripts": {
         "build": "tsc",
-        "dev": "tsc -w",
-        "prepare": "npm run build"
+        "dev": "tsc -w"
     },
     "keywords": [
         "redux",
@@ -27,7 +26,8 @@
     "dependencies": {
         "invariant": "^2.2.4",
         "redux": "^4.0.1",
-        "redux-observable": "^1.0.0",
+        "redux-observable": "^1.1.0",
+        "redux-persist": "^5.10.0",
         "redux-saga": "^0.16.2",
         "rxjs": "^6.3.3"
     }

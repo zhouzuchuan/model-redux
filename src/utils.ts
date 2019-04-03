@@ -1,5 +1,5 @@
 import { ofType, ActionsObservable } from 'redux-observable';
-import { AnyAction, Action } from '../node_modules/redux';
+import { AnyAction, Action } from 'redux';
 
 // 封装epic类型 调用
 export const epicEnhance = (fn: any) => (action$: ActionsObservable<AnyAction>, ...other: any[]) =>
