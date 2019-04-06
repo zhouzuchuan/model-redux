@@ -34,6 +34,7 @@ yarn add model-redux
 
 -   减少使用 redux 所必须写的样板代码
 -   统一管理副作用，实现组件与状态的解耦
+-   数据持久化
 
 ## 核心
 
@@ -62,7 +63,7 @@ import sagas from 'model-redux/effects/sagas';
 
 const { store } = modelRedux.create({
     middlewares: [],
-    effects: [epics(), sagas()]
+    effects: [epics(), sagas()],
     // effects:  sagas()
 });
 ```
@@ -91,6 +92,27 @@ const { store } = modelRedux.create({
 
 当前 `model` 的数据状态
 
+#### presist
+
+持久化配置（默认采用 sessionStorage）
+
+```js
+
+{
+    //...
+
+    persist: {
+        // 黑名单
+        blacklist: [],
+        // 白名单
+        whitelist: [],
+        // ...
+    }
+}
+```
+
+具体参数可以参考官方 API [redux-persist](https://github.com/rt2zz/redux-persist)
+
 #### reducers
 
 同于 `redux` 里的 `reducer`，接收 `action`，同步更新 `state`
@@ -106,7 +128,7 @@ import sagas from 'model-redux/effects/sagas';
 
 const { store } = modelRedux.create({
     middlewares: [],
-    effects: sagas('effects')
+    effects: sagas('effects'),
 });
 ```
 
@@ -163,7 +185,7 @@ ReactDOM.render(
     <Provider store={store}>
         <App />
     </Provider>,
-    document.getElementById('root')
+    document.getElementById('root'),
 );
 registerServiceWorker();
 ```
@@ -187,11 +209,11 @@ export default connect(
         return {
             handleAdd() {
                 dispatch({
-                    type: 'app/add'
+                    type: 'app/add',
                 });
-            }
+            },
         };
-    }
+    },
 )(ChlidrenComponent);
 ```
 
@@ -216,7 +238,7 @@ Vue.prototype.dispatch = store.dispatch;
 new Vue({
     router,
     store,
-    render: h => h(App)
+    render: h => h(App),
 }).$mount('#app');
 ```
 
@@ -230,10 +252,10 @@ export default {
     methods: {
         handleAdd() {
             this.dispatch({
-                type: 'app/add'
+                type: 'app/add',
             });
-        }
-    }
+        },
+    },
 };
 ```
 

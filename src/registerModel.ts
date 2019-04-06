@@ -1,7 +1,8 @@
 import { combineReducers } from 'redux';
 
 import { addNameSpace, createStatisticsName, createReducer, isObject, isUndefined } from './utils';
-import { keyword, STORE, MODELS, REDUCERS } from './config';
+import { keyword, STORE, MODELS, REDUCERS, modelPersistConfig } from './config';
+import { persistReducer } from 'redux-persist';
 
 import * as invariant from 'invariant';
 
@@ -82,6 +83,16 @@ export default function registerModel(app: any = null, models: any) {
         app[REDUCERS][n] = createReducer(col.state[n] || {}, m);
     }
     app[STORE].replaceReducer(combineReducers(app[REDUCERS]));
+
+    // 注入reducer
+    for (let [n, m] of Object.entries(col.reducers)) {
+        const reducer = createReducer(col.state[n] || {}, m);
+        const tempPersist = col.persist[n];
+
+        // 如果有持久化 则添加配置
+        app[REDUCERS][n] = tempPersist ? persistReducer(tempPersist, reducer) : reducer;
+    }
+    app[STORE].replaceReducer(persistReducer({ ...modelPersistConfig, key: 'root' }, combineReducers(app[REDUCERS])));
 
     // 载入声明的effects
     Object.entries(app.effectsList).forEach(([effectsname, { injectAsync, middleware }]: [string, any]) => {

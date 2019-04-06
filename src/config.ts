@@ -1,5 +1,5 @@
 import { createStatisticsName } from './utils';
-import storage from 'redux-persist/lib/storage';
+import storage from 'redux-persist/lib/storage/session';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 
 // 模型关键词
@@ -12,8 +12,5 @@ export const REDUCERS = createStatisticsName('reducers');
 // 持久化默认配置
 export const modelPersistConfig = {
     storage: storage,
-    blacklist: [],
-    whitelist: [],
     stateReconciler: autoMergeLevel2,
-    transform: [],
 };

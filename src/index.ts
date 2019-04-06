@@ -1,3 +1,4 @@
+import { persistStore } from 'redux-persist';
 import configureStore from './configureStore';
 import registerModel from './registerModel';
 import { MODELS, STORE } from './config';
@@ -18,20 +19,21 @@ export const create = ({ middlewares = [], effects = null } = {} as Icteate) => 
                 : (isArray(effects) ? effects : [effects]).reduce((r: any, fn: () => any) => {
                       return {
                           ...r,
-                          ...(isFunction(fn) ? fn() : fn)
+                          ...(isFunction(fn) ? fn() : fn),
                       };
                   }, {}),
-        [STORE]: null
+        [STORE]: null,
     };
 
     const store = configureStore(app, middlewares);
 
     return {
         store,
-        registerModel: registerModel.bind(null, app)
+        persistor: persistStore(store),
+        registerModel: registerModel.bind(null, app),
     };
 };
 
 export default {
-    create
+    create,
 };
