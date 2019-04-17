@@ -7,9 +7,12 @@ import { isFunction, isArray } from './utils';
 export interface Icteate {
     middlewares?: never[];
     effects?: null | any;
+    persist?: {
+        storage: any;
+    };
 }
 
-export const create = ({ middlewares = [], effects = null } = {} as Icteate) => {
+export const create = ({ middlewares = [], effects = null, persist } = {} as Icteate) => {
     const app = {
         [MODELS]: [],
         effectsList:
@@ -30,7 +33,7 @@ export const create = ({ middlewares = [], effects = null } = {} as Icteate) => 
     return {
         store,
         persistor: persistStore(store),
-        registerModel: registerModel.bind(null, app),
+        registerModel: registerModel.bind(null, app, persist),
     };
 };
 

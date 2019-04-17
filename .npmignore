@@ -59,9 +59,9 @@ typings/
 
 .editorconfig
 .gitignore
-.tslint.json
+tslint.json
 .gitignore
-.tsconfig.json
+tsconfig.json
 yarn.lock
 *.lock
 src/*
