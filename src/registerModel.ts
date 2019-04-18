@@ -2,11 +2,10 @@ import { combineReducers } from 'redux';
 
 import { addNameSpace, createStatisticsName, createReducer, isObject, isUndefined } from './utils';
 import { keyword, STORE, MODELS, REDUCERS } from './config';
-// import { persistReducer } from 'redux-persist';
 
 import * as invariant from 'invariant';
 
-export default function registerModel(app: any = null, persist: any = {}, models: any) {
+export default function registerModel(app: any = null, persistConfig: any | boolean, models: any) {
     if (app === null) {
         invariant(false, 'model-redux 并未创建！');
         return;
@@ -88,15 +87,12 @@ export default function registerModel(app: any = null, persist: any = {}, models
     }
     app[STORE].replaceReducer(combineReducers(app[REDUCERS]));
 
-    // 所有模型中是否有一个或多个模型声明了持久化
-    const hasPersist = !!Object.entries(col.persist).length;
-
-    const persistReducer = hasPersist ? require('redux-persist').persistReducer : () => null;
+    const persistReducer = persistConfig ? require('redux-persist').persistReducer : () => null;
 
     // 持久化默认配置
-    const modelPersistConfig = hasPersist
+    const modelPersistConfig = persistConfig
         ? {
-              storage: Reflect.get(persist, 'storage') || require('redux-persist/lib/storage/session').default,
+              storage: persistConfig.storage || require('redux-persist/lib/storage/session').default,
               stateReconciler: require('redux-persist/lib/stateReconciler/autoMergeLevel2').default,
           }
         : {};
@@ -109,11 +105,16 @@ export default function registerModel(app: any = null, persist: any = {}, models
         const hasPersistCurrent = col.persist[n];
 
         // 如果有持久化 则添加配置
-        app[REDUCERS][n] = hasPersistCurrent ? persistReducer({ ...modelPersistConfig, key: n }, reducer) : reducer;
+        app[REDUCERS][n] =
+            hasPersistCurrent && persistConfig
+                ? persistReducer({ ...modelPersistConfig, ...hasPersistCurrent, key: n }, reducer)
+                : reducer;
     }
 
     const combine = combineReducers(app[REDUCERS]);
-    app[STORE].replaceReducer(hasPersist ? persistReducer({ ...modelPersistConfig, key: 'root' }, combine) : combine);
+    app[STORE].replaceReducer(
+        persistConfig ? persistReducer({ ...modelPersistConfig, key: 'root' }, combine) : combine,
+    );
 
     // 载入声明的effects
     Object.entries(app.effectsList).forEach(([effectsname, { injectAsync, middleware }]: [string, any]) => {

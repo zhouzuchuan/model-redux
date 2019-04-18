@@ -1,4 +1,3 @@
-import { persistStore } from 'redux-persist';
 import configureStore from './configureStore';
 import registerModel from './registerModel';
 import { MODELS, STORE } from './config';
@@ -30,10 +29,14 @@ export const create = ({ middlewares = [], effects = null, persist } = {} as Ict
 
     const store = configureStore(app, middlewares);
 
+    const persistStore = persist ? require('redux-persist').persistStore : () => null;
+
+    const persistConfig = persist ? { storage: Reflect.get(persist, 'storage') } : false;
+
     return {
         store,
         persistor: persistStore(store),
-        registerModel: registerModel.bind(null, app, persist),
+        registerModel: registerModel.bind(null, app, persistConfig),
     };
 };
 
