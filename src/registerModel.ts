@@ -92,8 +92,9 @@ export default function registerModel(app: any = null, persistConfig: any | bool
     // 持久化默认配置
     const modelPersistConfig = persistConfig
         ? {
-              storage: persistConfig.storage || require('redux-persist/lib/storage/session').default,
+              storage: require('redux-persist/lib/storage/session').default,
               stateReconciler: require('redux-persist/lib/stateReconciler/autoMergeLevel2').default,
+              ...(isObject(persistConfig) ? persistConfig : {}),
           }
         : {};
 

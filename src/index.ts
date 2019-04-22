@@ -1,13 +1,14 @@
 import configureStore from './configureStore';
 import registerModel from './registerModel';
 import { MODELS, STORE } from './config';
-import { isFunction, isArray } from './utils';
+import { isFunction, isArray, isObject } from './utils';
 
 export interface Icteate {
     middlewares?: never[];
     effects?: null | any;
     persist?: {
         storage: any;
+        transform?: any[]
     };
 }
 
@@ -31,7 +32,7 @@ export const create = ({ middlewares = [], effects = null, persist } = {} as Ict
 
     const persistStore = persist ? require('redux-persist').persistStore : () => null;
 
-    const persistConfig = persist ? { storage: Reflect.get(persist, 'storage') } : false;
+    const persistConfig = persist ? (isObject(persist) ? persist : {}) : false;
 
     return {
         store,
