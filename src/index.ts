@@ -8,7 +8,7 @@ export interface Icteate {
     effects?: null | any;
     persist?: {
         storage: any;
-        transform?: any[]
+        transform?: any[];
     };
 }
 
@@ -37,7 +37,7 @@ export const create = ({ middlewares = [], effects = null, persist } = {} as Ict
     return {
         store,
         persistor: persistStore(store),
-        registerModel: registerModel.bind(null, app, persistConfig),
+        registerModel: registerModel.bind(null, app, { persistConfig }),
     };
 };
 

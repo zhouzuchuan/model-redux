@@ -5,7 +5,11 @@ import { keyword, STORE, MODELS, REDUCERS } from './config';
 
 import * as invariant from 'invariant';
 
-export default function registerModel(app: any = null, persistConfig: any | boolean, models: any) {
+type config = {
+    persistConfig: any | boolean;
+};
+
+export default function registerModel(app: any = null, { persistConfig }: config, models: any) {
     if (app === null) {
         invariant(false, 'model-redux 并未创建！');
         return;
@@ -85,7 +89,6 @@ export default function registerModel(app: any = null, persistConfig: any | bool
     for (let [n, m] of Object.entries(col.reducers)) {
         app[REDUCERS][n] = createReducer(col.state[n] || {}, m);
     }
-    app[STORE].replaceReducer(combineReducers(app[REDUCERS]));
 
     const persistReducer = persistConfig ? require('redux-persist').persistReducer : () => null;
 
@@ -113,6 +116,7 @@ export default function registerModel(app: any = null, persistConfig: any | bool
     }
 
     const combine = combineReducers(app[REDUCERS]);
+
     app[STORE].replaceReducer(
         persistConfig ? persistReducer({ ...modelPersistConfig, key: 'root' }, combine) : combine,
     );

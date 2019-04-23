@@ -61,4 +61,6 @@ typings/
 .editorconfig
 lib/
 
+yarn.lock
+
 
