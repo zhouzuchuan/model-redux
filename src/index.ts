@@ -2,17 +2,15 @@ import configureStore from './configureStore';
 import registerModel from './registerModel';
 import { MODELS, STORE } from './config';
 import { isFunction, isArray, isObject } from './utils';
+import { PersistConfig } from 'redux-persist';
 
-export interface Icteate {
+export interface ModelConfig {
     middlewares?: never[];
     effects?: null | any;
-    persist?: {
-        storage: any;
-        transform?: any[];
-    };
+    persist?: PersistConfig;
 }
 
-export const create = ({ middlewares = [], effects = null, persist } = {} as Icteate) => {
+export const create = ({ middlewares = [], effects = null, persist } = {} as ModelConfig) => {
     const app = {
         [MODELS]: [],
         effectsList:
