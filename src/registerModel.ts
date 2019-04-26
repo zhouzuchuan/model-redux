@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 
-import { addNameSpace, createStatisticsName, createReducer, isObject, isUndefined } from './utils';
+import { addNameSpace, createStatisticsName, createReducer, isObject, isUndefined, isArray } from './utils';
 import { keyword, STORE, MODELS, REDUCERS } from './config';
 
 import * as invariant from 'invariant';
@@ -93,13 +93,19 @@ export default function registerModel(app: any = null, { persistConfig }: config
     const persistReducer = persistConfig ? require('redux-persist').persistReducer : () => null;
 
     // 持久化默认配置
-    const modelPersistConfig = persistConfig
-        ? {
-              storage: require('redux-persist/lib/storage/session').default,
-              stateReconciler: require('redux-persist/lib/stateReconciler/autoMergeLevel2').default,
-              ...(isObject(persistConfig) ? persistConfig : {}),
-          }
-        : {};
+    let modelPersistConfig = {};
+
+    if (persistConfig) {
+        const getTransforms = isObject(persistConfig) ? persistConfig.transforms || [] : [];
+
+        const immutableTransform = require('redux-persist-transform-immutable');
+
+        modelPersistConfig = {
+            storage: require('redux-persist/lib/storage/session').default,
+            transforms: [immutableTransform(), ...(isArray(getTransforms) ? getTransforms : [])],
+            ...(isObject(persistConfig) ? persistConfig : {}),
+        };
+    }
 
     // 注入reducer
     for (let [n, m] of Object.entries(col.reducers)) {
@@ -111,7 +117,15 @@ export default function registerModel(app: any = null, { persistConfig }: config
         // 如果有持久化 则添加配置
         app[REDUCERS][n] =
             hasPersistCurrent && persistConfig
-                ? persistReducer({ ...modelPersistConfig, ...hasPersistCurrent, key: n }, reducer)
+                ? persistReducer(
+                      {
+                          stateReconciler: require('redux-persist/lib/stateReconciler/autoMergeLevel2').default,
+                          ...modelPersistConfig,
+                          ...hasPersistCurrent,
+                          key: n,
+                      },
+                      reducer,
+                  )
                 : reducer;
     }
 
