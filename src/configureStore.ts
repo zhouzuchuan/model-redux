@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware, compose } from 'redux';
+import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import { STORE } from './config';
 import { returnArray } from './utils';
 
@@ -16,9 +16,9 @@ export default function(app: any, middlewaresList = []) {
     const [middlewares = [], promises = []]: any = Object.values(app.effectsList).reduce(
         (r: any[], { middleware, promise }: any): any[] => [
             [...r[0], middleware],
-            [...r[1], ...(promise ? [promise.bind(null, app)] : [])]
+            [...r[1], ...(promise ? [promise.bind(null, app)] : [])],
         ],
-        [[], []]
+        [[], []],
     );
 
     const [beforeMW = [], afterMW = []] = middlewaresList;
@@ -29,10 +29,11 @@ export default function(app: any, middlewaresList = []) {
         ...returnArray(beforeMW),
         distributeMiddleware.bind(null, app),
         ...promises,
-        ...returnArray(afterMW)
+        ...returnArray(afterMW),
     ];
 
     const store = createStore((f: any) => f, {}, compose(...[applyMiddleware(...middleware2), devtools()]));
+    // const store = createStore((f: any) => f, {}, compose(...[applyMiddleware(...middleware2), devtools()]));
 
     app[STORE] = store;
 

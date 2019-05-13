@@ -2,15 +2,16 @@ import configureStore from './configureStore';
 import registerModel from './registerModel';
 import { MODELS, STORE } from './config';
 import { isFunction, isArray, isObject } from './utils';
-import { PersistConfig } from 'redux-persist';
+import { REDUCERS } from './config';
 
 export interface ModelConfig {
     middlewares?: never[];
     effects?: null | any;
-    persist?: PersistConfig;
+    persist?: any;
+    initialReducers: any;
 }
 
-export const create = ({ middlewares = [], effects = null, persist } = {} as ModelConfig) => {
+export const create = ({ middlewares = [], effects = null, persist, initialReducers = {} } = {} as ModelConfig) => {
     const app = {
         [MODELS]: [],
         effectsList:
@@ -24,6 +25,7 @@ export const create = ({ middlewares = [], effects = null, persist } = {} as Mod
                       };
                   }, {}),
         [STORE]: null,
+        [REDUCERS]: initialReducers,
     };
 
     const store = configureStore(app, middlewares);

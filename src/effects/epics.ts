@@ -1,15 +1,15 @@
 import { Subject, queueScheduler, BehaviorSubject } from 'rxjs';
 import { observeOn, mergeMap } from 'rxjs/operators';
 import { createEpicMiddleware, combineEpics, ActionsObservable, StateObservable } from 'redux-observable';
+import { AnyAction } from 'redux';
 
 import * as invariant from 'invariant';
 
 import {
     isFunction,
-    epicEnhance
+    epicEnhance,
     // createStatisticsName
 } from '../utils';
-import { AnyAction } from '../../node_modules/redux';
 
 export const middleware = createEpicMiddleware();
 
@@ -17,7 +17,7 @@ export const injectAsync = (injectAsyncEpics: any) => {
     if (injectAsyncEpics) {
         const epics: any = Object.values(injectAsyncEpics).reduce(
             (r: any[], m) => [...r, ...Object.values(m).map(v => epicEnhance(v))],
-            []
+            [],
         );
         const epic$ = new BehaviorSubject(combineEpics(...epics));
 
@@ -71,8 +71,8 @@ export default function(name = 'epics') {
     return {
         [name]: {
             middleware,
-            injectAsync
+            injectAsync,
             // promise: promise.bind(null, createStatisticsName(name))
-        }
+        },
     };
 }
