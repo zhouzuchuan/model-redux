@@ -10,7 +10,7 @@ export default function(app: any, middlewaresList = []) {
         process.env.NODE_ENV !== 'production' &&
         (window as any).__REDUX_DEVTOOLS_EXTENSION__
             ? (window as any).__REDUX_DEVTOOLS_EXTENSION__
-            : () => (f: any) => f;
+            : (window as any).__REDUX_DEVTOOLS_EXTENSION__;
 
     // 分发effects middleware
     const [middlewares = [], promises = []]: any = Object.values(app.effectsList).reduce(
@@ -33,7 +33,6 @@ export default function(app: any, middlewaresList = []) {
     ];
 
     const store = createStore((f: any) => f, {}, compose(...[applyMiddleware(...middleware2), devtools()]));
-    // const store = createStore((f: any) => f, {}, compose(...[applyMiddleware(...middleware2), devtools()]));
 
     app[STORE] = store;
 

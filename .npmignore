@@ -65,3 +65,5 @@ tsconfig.json
 yarn.lock
 *.lock
 src/*
+
+logo.svg

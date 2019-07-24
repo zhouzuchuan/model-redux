@@ -8,30 +8,30 @@ import * as invariant from 'invariant';
 export const middleware = createSagaMiddleware();
 
 export const injectAsync = (injectAsyncSagas: any) => {
-    const temp = Object.entries(injectAsyncSagas).reduce((r, [name, fns]) => {
+    const temp = Object.entries(injectAsyncSagas).reduce((r, [name, fns]: any) => {
         return {
             ...r,
             [name]: function*() {
                 yield all([
                     fork(function*() {
                         yield all([
-                            ...Object.entries(fns).map(([n, m]) => {
+                            ...Object.entries(fns).map(([n, m]: any) => {
                                 return takeLatest(n, function*(action) {
                                     yield all([
                                         fork(
                                             m.bind(null, action, {
                                                 put,
                                                 select,
-                                                call
-                                            })
-                                        )
+                                                call,
+                                            }),
+                                        ),
                                     ]);
                                 });
-                            })
+                            }),
                         ]);
-                    })
+                    }),
                 ]);
-            }
+            },
         };
     }, {});
 
@@ -91,7 +91,7 @@ export default function(name = 'sagas') {
         [name]: {
             middleware,
             injectAsync,
-            promise: promise.bind(null, createStatisticsName(name))
-        }
+            promise: promise.bind(null, createStatisticsName(name)),
+        },
     };
 }

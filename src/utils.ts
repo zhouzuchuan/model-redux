@@ -10,7 +10,7 @@ export const createStatisticsName = (str: string): string => `@@_${str}`;
 
 // 添加命名空间
 export const addNameSpace = (name: string, model: any) => {
-    return Object.entries(model[name] || {}).reduce((r, [n, m]) => {
+    return Object.entries(model[name] || {}).reduce((r, [n, m]: any) => {
         const funName = `${model.namespace}/${n}`;
         Reflect.defineProperty(m, 'name', { value: funName });
         return { ...r, [funName]: m };
