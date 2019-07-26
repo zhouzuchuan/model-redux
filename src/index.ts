@@ -30,14 +30,9 @@ export const create = ({ middlewares = [], effects = null, persist, initialReduc
 
     const store = configureStore(app, middlewares);
 
-    const persistStore = persist ? require('redux-persist').persistStore : () => null;
-
-    const persistConfig = persist ? (isObject(persist) ? persist : {}) : false;
-
     return {
         store,
-        persistor: persistStore(store),
-        registerModel: registerModel.bind(null, app, { persistConfig }),
+        registerModel: registerModel.bind(null, app),
     };
 };
 

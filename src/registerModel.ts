@@ -3,13 +3,9 @@ import { combineReducers } from 'redux';
 import { addNameSpace, createStatisticsName, createReducer, isObject, isUndefined, isArray } from './utils';
 import { keyword, STORE, MODELS, REDUCERS } from './config';
 
-import * as invariant from 'invariant';
+import invariant from 'invariant';
 
-type config = {
-    persistConfig: any | boolean;
-};
-
-export default function registerModel(app: any = null, { persistConfig }: config, models: any) {
+export default function registerModel(app: any = null, models: any) {
     if (app === null) {
         invariant(false, 'model-redux 并未创建！');
         return;
@@ -39,7 +35,7 @@ export default function registerModel(app: any = null, { persistConfig }: config
         .reduce((r, model) => {
             const dealKey: string[] = Object.keys(model).filter((v: string) => !keyword.includes(v));
 
-            const { namespace, state = {}, persist } = model;
+            const { namespace, state = {} } = model;
 
             temp = true;
 
@@ -74,10 +70,6 @@ export default function registerModel(app: any = null, { persistConfig }: config
                         ...(r.state || {}),
                         [namespace]: state,
                     },
-                    persist: {
-                        ...(r.state || {}),
-                        ...(persist && { [namespace]: state }),
-                    },
                 },
             );
         }, {});
@@ -90,50 +82,7 @@ export default function registerModel(app: any = null, { persistConfig }: config
         app[REDUCERS][n] = createReducer(col.state[n] || {}, m);
     }
 
-    const persistReducer = persistConfig ? require('redux-persist').persistReducer : () => null;
-
-    // 持久化默认配置
-    let modelPersistConfig = {};
-
-    if (persistConfig) {
-        const getTransforms = isObject(persistConfig) ? persistConfig.transforms || [] : [];
-
-        const immutableTransform = require('redux-persist-transform-immutable');
-
-        modelPersistConfig = {
-            storage: require('redux-persist/lib/storage/session').default,
-            transforms: [immutableTransform(), ...(isArray(getTransforms) ? getTransforms : [])],
-            ...(isObject(persistConfig) ? persistConfig : {}),
-        };
-    }
-
-    // 注入reducer
-    for (let [n, m] of Object.entries(col.reducers)) {
-        const reducer = createReducer(col.state[n] || {}, m);
-
-        // 当前模型是否声明了持久化
-        const hasPersistCurrent = col.persist[n];
-
-        // 如果有持久化 则添加配置
-        app[REDUCERS][n] =
-            hasPersistCurrent && persistConfig
-                ? persistReducer(
-                      {
-                          stateReconciler: require('redux-persist/lib/stateReconciler/autoMergeLevel2').default,
-                          ...modelPersistConfig,
-                          ...hasPersistCurrent,
-                          key: n,
-                      },
-                      reducer,
-                  )
-                : reducer;
-    }
-
-    const combine = combineReducers(app[REDUCERS]);
-
-    app[STORE].replaceReducer(
-        persistConfig ? persistReducer({ ...modelPersistConfig, key: 'root' }, combine) : combine,
-    );
+    app[STORE].replaceReducer(combineReducers(app[REDUCERS]));
 
     // 载入声明的effects
     Object.entries(app.effectsList).forEach(([effectsname, { injectAsync, middleware }]: [string, any]) => {

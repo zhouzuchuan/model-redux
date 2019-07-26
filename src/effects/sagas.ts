@@ -3,7 +3,7 @@ import { fork, takeLatest, all, put, select, call } from 'redux-saga/effects';
 
 import { isGeneratorFunction, isFunction, createStatisticsName } from '../utils';
 
-import * as invariant from 'invariant';
+import invariant from 'invariant';
 
 export const middleware = createSagaMiddleware();
 

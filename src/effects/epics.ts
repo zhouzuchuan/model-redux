@@ -3,7 +3,7 @@ import { observeOn, mergeMap } from 'rxjs/operators';
 import { createEpicMiddleware, combineEpics, ActionsObservable, StateObservable } from 'redux-observable';
 import { AnyAction } from 'redux';
 
-import * as invariant from 'invariant';
+import invariant from 'invariant';
 
 import {
     isFunction,
@@ -22,7 +22,7 @@ export const injectAsync = (injectAsyncEpics: any) => {
         const epic$ = new BehaviorSubject(combineEpics(...epics));
 
         const rootEpic: any = (action$: ActionsObservable<AnyAction>, state$: StateObservable<any>) =>
-            epic$.pipe(mergeMap(epic => epic(action$, state$)));
+            epic$.pipe(mergeMap((epic: any) => epic(action$, state$)));
 
         middleware.run(rootEpic);
     }
