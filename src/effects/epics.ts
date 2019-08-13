@@ -1,5 +1,5 @@
 import { Subject, queueScheduler, BehaviorSubject } from 'rxjs';
-import { observeOn, mergeMap } from 'rxjs/operators';
+import { observeOn, mergeMap, map } from 'rxjs/operators';
 import { createEpicMiddleware, combineEpics, ActionsObservable, StateObservable } from 'redux-observable';
 import { AnyAction } from 'redux';
 
@@ -8,6 +8,7 @@ import invariant from 'invariant';
 import {
     isFunction,
     epicEnhance,
+    epicTailProcess,
     // createStatisticsName
 } from '../utils';
 
@@ -15,16 +16,28 @@ export const middleware = createEpicMiddleware();
 
 export const injectAsync = (injectAsyncEpics: any) => {
     if (injectAsyncEpics) {
-        const epics: any = Object.values(injectAsyncEpics).reduce(
-            (r: any[], m: any) => [...r, ...Object.values(m).map((v: any) => epicEnhance(v))],
-            [],
-        );
-        const epic$ = new BehaviorSubject(combineEpics(...epics));
+        Object.entries(injectAsyncEpics).forEach((r: any[], [n, m]: any) => {
+            const epic$ = new BehaviorSubject(combineEpics(...Object.values(m).map((v: any) => epicEnhance(v))));
 
-        const rootEpic: any = (action$: ActionsObservable<AnyAction>, state$: StateObservable<any>) =>
-            epic$.pipe(mergeMap((epic: any) => epic(action$, state$)));
+            const rootEpic: any = (action$: ActionsObservable<AnyAction>, state$: StateObservable<any>) =>
+                epic$.pipe(
+                    mergeMap((epic: any) => epic(action$, state$)),
+                    map(result => epicTailProcess(result, n)),
+                );
 
-        middleware.run(rootEpic);
+            middleware.run(rootEpic);
+        });
+
+        // const epics: any = Object.values(injectAsyncEpics).reduce(
+        //     (r: any[], m: any) => [...r, ...Object.values(m).map((v: any) => epicEnhance(v))],
+        //     [],
+        // );
+        // const epic$ = new BehaviorSubject(combineEpics(...epics));
+
+        // const rootEpic: any = (action$: ActionsObservable<AnyAction>, state$: StateObservable<any>) =>
+        //     epic$.pipe(mergeMap((epic: any) => epic(action$, state$)));
+
+        // middleware.run(rootEpic);
     }
 };
 

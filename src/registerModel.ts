@@ -87,7 +87,7 @@ export default function registerModel(app: any = null, models: any) {
     // 载入声明的effects
     Object.entries(app.effectsList).forEach(([effectsname, { injectAsync, middleware }]: [string, any]) => {
         if (col[effectsname]) {
-            injectAsync(col[effectsname], middleware);
+            injectAsync(col[effectsname]);
         }
     });
 }

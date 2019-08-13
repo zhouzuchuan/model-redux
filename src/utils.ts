@@ -61,3 +61,28 @@ export const isArray = (o: any): boolean => getType(o) === 'array';
 export const isNull = (o: any): boolean => getType(o) === 'null';
 export const isBoolean = (o: any): boolean => getType(o) === 'boolean';
 export const isNumber = (o: any): boolean => getType(o) === 'number';
+
+export const epicTailProcess = (result: any, namespace: string) => {
+    if (Array.isArray(result)) {
+        return result.map(v => {
+            if (v.type) {
+                v.type = prefixType(v.type, namespace);
+            }
+            return v;
+        });
+    } else if (isObject(result)) {
+        if (result.type) {
+            result.type = prefixType(result.type, namespace);
+        }
+        return result;
+    }
+
+    return result;
+};
+
+const prefixType = (type: string, namespace: string): string => {
+    if (type && !type.includes('/')) {
+        type = `${namespace}/${type}`;
+    }
+    return type;
+};
