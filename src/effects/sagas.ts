@@ -1,47 +1,35 @@
 import createSagaMiddleware from 'redux-saga';
 import { fork, takeLatest, all, put, select, call } from 'redux-saga/effects';
-
-import { isGeneratorFunction, isFunction, createStatisticsName } from '../utils';
-
 import invariant from 'invariant';
+import { AnyAction } from 'redux';
+
+import { isGeneratorFunction, isFunction, createStatisticsName, epicTailProcess } from '../utils';
 
 export const middleware = createSagaMiddleware();
 
-export const injectAsync = (injectAsyncSagas: any) => {
-    const temp = Object.entries(injectAsyncSagas).reduce((r, [name, fns]: any) => {
-        return {
-            ...r,
-            [name]: function*() {
-                yield all([
-                    fork(function*() {
-                        yield all([
-                            ...Object.entries(fns).map(([n, m]: any) => {
-                                return takeLatest(n, function*(action) {
-                                    yield all([
-                                        fork(
-                                            m.bind(null, action, {
-                                                put,
-                                                select,
-                                                call,
-                                            }),
-                                        ),
-                                    ]);
-                                });
-                            }),
-                        ]);
-                    }),
-                ]);
-            },
-        };
-    }, {});
+// 封装put
+const putEffect = (namespace: string) => (action: AnyAction) => put(epicTailProcess(action, namespace));
 
-    if (temp) {
-        for (let [n, m] of Object.entries(temp)) {
-            if (Object.prototype.hasOwnProperty.call(temp, n)) {
-                middleware.run(m as any);
-            }
-        }
-    }
+export const injectAsync = (injectAsyncSagas: any) => {
+    Object.entries(injectAsyncSagas).forEach(([name, fns]: any) => {
+        middleware.run(function*() {
+            yield all([
+                ...Object.entries(fns).map(([n, m]: any) => {
+                    return takeLatest(n, function*(action) {
+                        yield all([
+                            fork(
+                                m.bind(null, action, {
+                                    put: putEffect(name),
+                                    select,
+                                    call,
+                                }),
+                            ),
+                        ]);
+                    });
+                }),
+            ]);
+        });
+    });
 };
 
 export const promise = (name: string, app: any, store: any) => (next: any) => (action: any) => {
@@ -54,13 +42,14 @@ export const promise = (name: string, app: any, store: any) => (next: any) => (a
 
     const { __RESOLVE__, __REJECT__, typeName, ...rest } = action;
 
-    if (typeName !== 'sagas') {
+    // 如果当前action并非从sagas中分发 则跳过
+    if (typeName !== name) {
         next(action);
         return;
     }
 
     if (isFunction(__REJECT__) && isFunction(__RESOLVE__)) {
-        const fns = app[name][rest.type];
+        const fns = app[createStatisticsName(name)][rest.type];
 
         if (isGeneratorFunction(fns)) {
             const gen = actionG(fns, rest, __RESOLVE__, __REJECT__);
@@ -91,7 +80,7 @@ export default function(name = 'sagas') {
         [name]: {
             middleware,
             injectAsync,
-            promise: promise.bind(null, createStatisticsName(name)),
+            promise: promise.bind(null, name),
         },
     };
 }

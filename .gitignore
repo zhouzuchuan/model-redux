@@ -57,8 +57,7 @@ typings/
 # dotenv environment variables file
 .env
 
-
-.editorconfig
+ 
 lib/
 
 yarn.lock

@@ -16,7 +16,7 @@ export const middleware = createEpicMiddleware();
 
 export const injectAsync = (injectAsyncEpics: any) => {
     if (injectAsyncEpics) {
-        Object.entries(injectAsyncEpics).forEach((r: any[], [n, m]: any) => {
+        Object.entries(injectAsyncEpics).forEach(([n, m]: any) => {
             const epic$ = new BehaviorSubject(combineEpics(...Object.values(m).map((v: any) => epicEnhance(v))));
 
             const rootEpic: any = (action$: ActionsObservable<AnyAction>, state$: StateObservable<any>) =>

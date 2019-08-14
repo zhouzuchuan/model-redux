@@ -65,5 +65,6 @@ tsconfig.json
 yarn.lock
 *.lock
 src/*
+.babelrc
 
 logo.svg
