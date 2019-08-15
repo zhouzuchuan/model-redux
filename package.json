@@ -9,7 +9,8 @@
         "build": "npm run build:types && npm run build:js",
         "build:types": "tsc --emitDeclarationOnly",
         "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline",
-        "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"
+        "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
+        "test": "jest"
     },
     "keywords": [
         "redux",
@@ -27,13 +28,26 @@
         "@babel/plugin-proposal-numeric-separator": "^7.2.0",
         "@babel/plugin-proposal-object-rest-spread": "^7.4.0",
         "@babel/preset-env": "^7.4.1",
+        "@babel/preset-react": "^7.0.0",
         "@babel/preset-typescript": "^7.3.3",
+        "@types/enzyme": "^3.10.3",
+        "@types/enzyme-adapter-react-16": "^1.0.5",
         "@types/invariant": "^2.2.29",
         "@types/node": "^12.6.2",
+        "@types/react-redux": "^7.1.1",
         "@types/redux": "^3.6.0",
         "@types/redux-saga": "^0.10.5",
+        "babel-jest": "^24.8.0",
+        "babel-loader": "^8.0.6",
         "babel-plugin-add-module-exports": "^1.0.2",
         "conventional-changelog": "^3.1.8",
+        "enzyme": "^3.10.0",
+        "enzyme-adapter-react-16": "^1.14.0",
+        "jest": "^24.8.0",
+        "react": "^16.9.0",
+        "react-dom": "^16.9.0",
+        "react-redux": "^7.1.0",
+        "sinon": "^7.4.1",
         "typescript": "^3.3.3"
     },
     "dependencies": {

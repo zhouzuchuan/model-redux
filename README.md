@@ -124,7 +124,7 @@ const { store } = modelRedux.create({
 
 ```js
 import modelRedux from 'model-redux';
-import sagas from 'model-redux/effects/sagas';
+import sagas from 'model-redux/lib/effects/sagas';
 
 const { store } = modelRedux.create({
     middlewares: [],

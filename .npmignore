@@ -66,5 +66,6 @@ yarn.lock
 *.lock
 src/*
 .babelrc
+.DS_Store
 
 logo.svg
