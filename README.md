@@ -58,11 +58,12 @@ const { store } = modelRedux.create();
 
 ```js
 import modelRedux from 'model-redux';
-import epics from 'model-redux/effects/epics';
-import sagas from 'model-redux/effects/sagas';
+import epics from 'model-redux/lib/effects/epics';
+import sagas from 'model-redux/lib/effects/sagas';
 
 const { store } = modelRedux.create({
     middlewares: [],
+    // effects function 支持传入一个参数 即指定model中的字段 默认为当前的 effects name 分别为 epics、 sagas
     effects: [epics(), sagas()],
     // effects:  sagas()
 });
@@ -91,25 +92,6 @@ const { store } = modelRedux.create({
 #### state
 
 当前 `model` 的数据状态
-
-#### presist
-
-持久化配置（默认采用 sessionStorage）
-
-```js
-
-{
-    //...
-
-    persist: {
-        // 黑名单
-        blacklist: [],
-        // 白名单
-        whitelist: [],
-        // ...
-    }
-}
-```
 
 具体参数可以参考官方 API [redux-persist](https://github.com/rt2zz/redux-persist)
 
@@ -160,6 +142,29 @@ export default {
         }
     }
 };
+```
+
+> 调用当前 `model` 中 reducers 时，action type 可以省略命名空间， 如果是跨 model 则必须添加命名空间
+
+```js
+
+    epics: {
+        add: epic$ => return epic$.pipe(
+                switchMap(() => [
+                    // dispatch 当前 model 的 success reducers
+                    {
+                        type: 'success',
+                        payload: 'ddd'
+                    },
+                    // dispatch edit model的 success reducers
+                    {
+                    type: 'edit/success',
+                    payload: 'ddd'
+                },
+                ])
+            )
+    },
+
 ```
 
 ### React
@@ -217,49 +222,8 @@ export default connect(
 )(ChlidrenComponent);
 ```
 
-### Vue
-
-```js
-// index.js
-
-import Vue from 'vue';
-import App from './App.vue';
-import router from './router';
-import modelRedux from 'model-redux';
-
-import appModel from './app.js';
-
-const { store, registerModel } = modelRedux.create();
-
-registerModel(appModel);
-
-Vue.prototype.dispatch = store.dispatch;
-
-new Vue({
-    router,
-    store,
-    render: h => h(App),
-}).$mount('#app');
-```
-
-将 `store.dispatch` 绑定的 `Vue.prototype` 上 方便调用
-
-```js
-// 子组件
-
-export default {
-    name: 'HelloWorld',
-    methods: {
-        handleAdd() {
-            this.dispatch({
-                type: 'app/add',
-            });
-        },
-    },
-};
-```
-
-### 其他可以使用 `redux` 的架构的框架 都可以使用 `model-redux`
+> 其他可以使用 `redux` 的架构的框架 都可以使用 `model-redux`  
+> 比如 `小程序多端框架` [taro](https://github.com/NervJS/taro)
 
 ## License
 
